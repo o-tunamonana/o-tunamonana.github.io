@@ -1,237 +1,479 @@
-<!-- Generated with Claude -->
-
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Business Analytics Portfolio</title>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Una Qian</title>
+<meta name="description" content="Una Qian — I want to make data with heart. Wander a little forest to meet an analytics student who started out studying people.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght@400;500;600&family=Caveat:wght@500;700&display=swap">
+<style>
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+img{max-width:100%}[hidden]{display:none!important}
+</style>
+<style>
+/* Layout: one full-screen dusk forest (16:9 stage, pans sideways on phones); stories open in a paper card; a trail map of chips sits at the bottom */
+:root {
+  --night: #0F1A1E;
+  --ink: #F3EBDD;
+  --ink-dim: #BFC8B9;
+  --paper: #F4EBDA;
+  --paper-ink: #2A2620;
+  --paper-dim: #6D6456;
+  --glow: #FFC65C;
+  --moss: #7FA77A;
+  --display: "Young Serif", Georgia, serif;
+  --body: "Figtree", "Avenir Next", "Segoe UI", sans-serif;
+  --hand: "Caveat", "Bradley Hand", "Comic Sans MS", cursive;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body { margin: 0; background: var(--night); color: var(--ink); font-family: var(--body); overflow: hidden; }
+button { font: inherit; }
+:focus-visible { outline: 2px solid var(--glow); outline-offset: 3px; }
 
-    <style>
-      /* ============================================================
-       BASIC STYLES — students can tweak colors/fonts here
-       ============================================================ */
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
+.app { position: relative; height: 100%; }
+.stage { position: absolute; inset: 0; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.stage::-webkit-scrollbar { display: none; }
+#scene { display: block; height: 100%; width: max(100%, calc(100dvh * 16 / 9)); min-height: 100%; }
 
-      body {
-        font-family: Arial, Helvetica, sans-serif;
-        color: #222;
-        background: #f7f7f7;
-        line-height: 1.5;
-      }
+/* HUD */
+.hud { position: absolute; top: 0; left: 0; right: 0; display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;
+  padding-top: max(16px, env(safe-area-inset-top, 0px));
+  padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); pointer-events: none; }
+.brand { display: grid; gap: 2px; text-shadow: 0 2px 12px rgba(0,0,0,.5); }
+.brand b { font-family: var(--display); font-weight: 400; font-size: clamp(22px, 3vw, 30px); letter-spacing: -.01em; }
+.brand span { font-size: 14px; color: var(--ink-dim); }
+.brand .motto { font-family: var(--hand); font-size: 22px; color: var(--glow); line-height: 1.1; }
+.counter { pointer-events: auto; font-family: var(--hand); font-size: 22px; background: rgba(15,26,30,.55); border: 1px solid rgba(243,235,221,.18);
+  padding: 4px 14px; border-radius: 999px; backdrop-filter: blur(6px); white-space: nowrap; }
+.counter i { font-style: normal; color: var(--glow); }
 
-      .container {
-        max-width: 900px;
-        margin: 0 auto;
-        padding: 40px 20px;
-      }
+.trail { position: absolute; left: 0; right: 0; bottom: 0; display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none;
+  padding-bottom: max(14px, env(safe-area-inset-bottom, 0px)); padding-top: 10px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  background: linear-gradient(transparent, rgba(8,14,16,.75)); justify-content: center; }
+.trail::-webkit-scrollbar { display: none; }
+.trail button { flex: none; border: 1px solid rgba(243,235,221,.22); background: rgba(15,26,30,.6); color: var(--ink); border-radius: 999px;
+  padding: 7px 14px; font-size: 14px; cursor: pointer; backdrop-filter: blur(6px); display: inline-flex; gap: 7px; align-items: center; }
+.trail button::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: rgba(243,235,221,.35); }
+.trail button.found::before { background: var(--glow); box-shadow: 0 0 8px var(--glow); }
+.trail button:hover { border-color: var(--glow); }
+.hint { position: absolute; left: 50%; bottom: 70px; transform: translateX(-50%); font-family: var(--hand); font-size: 24px; color: var(--ink);
+  text-shadow: 0 2px 10px rgba(0,0,0,.6); pointer-events: none; transition: opacity .6s; white-space: nowrap; }
+.hint.gone { opacity: 0; }
 
-      /* ---------- HEADER (photo + name + subheading) ---------- */
-      header {
-        text-align: center;
-        margin-bottom: 30px;
-      }
+/* Hotspots */
+.spot { cursor: pointer; outline: none; }
+.spot .halo { opacity: 0; transition: opacity .35s; }
+.spot:hover .halo, .spot:focus-visible .halo { opacity: 1; }
+.spot .tag { opacity: 0; transition: opacity .3s, transform .3s; transform: translateY(6px); pointer-events: none; }
+.spot:hover .tag, .spot:focus-visible .tag { opacity: 1; transform: none; }
+.spot .tag text { font-family: var(--hand); font-size: 30px; fill: var(--ink); }
+.spark { animation: pulse 2.2s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+.spot.found .spark { display: none; }
+@keyframes pulse { 0%,100% { opacity: .25; transform: scale(.7); } 50% { opacity: 1; transform: scale(1.15); } }
 
-      /* Empty space for photo — replace with your own <img> if you like */
-      .photo {
-        width: 140px;
-        height: 140px;
-        border-radius: 50%;
-        background: #ddd;
-        border: 2px dashed #aaa;
-        margin: 0 auto 16px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #888;
-        font-size: 13px;
-      }
+.sway { animation: sway 7s ease-in-out infinite; transform-box: fill-box; transform-origin: 50% 100%; }
+.sway.b { animation-duration: 9s; animation-delay: -3s; }
+@keyframes sway { 0%,100% { transform: rotate(-.8deg); } 50% { transform: rotate(.8deg); } }
+.swing { animation: swing 4s ease-in-out infinite; transform-box: view-box; transform-origin: 1052px 430px; }
+@keyframes swing { 0%,100% { transform: rotate(-4deg); } 50% { transform: rotate(4deg); } }
+.flame { animation: flick .5s ease-in-out infinite alternate; transform-box: fill-box; transform-origin: 50% 100%; }
+.flame.b { animation-duration: .7s; animation-delay: -.2s; }
+@keyframes flick { from { transform: scale(1, 1); } to { transform: scale(.88, 1.12); } }
+.blink { animation: blink 5s infinite; transform-box: fill-box; transform-origin: center; }
+@keyframes blink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(.1); } }
+.ripple { animation: flow 3s linear infinite; }
+@keyframes flow { to { stroke-dashoffset: -60; } }
+.firelight { animation: breathe 2.4s ease-in-out infinite; }
+@keyframes breathe { 0%,100% { opacity: .55; } 50% { opacity: .8; } }
 
-      header h1 {
-        font-size: 28px;
-        margin-bottom: 6px;
-      } /* NAME */
-      header p {
-        font-size: 16px;
-        color: #555;
-      } /* EXPERIENCES */
+/* Story card */
+.scrim { position: absolute; inset: 0; background: rgba(5,10,12,.35); opacity: 0; pointer-events: none; transition: opacity .3s; }
+.scrim.on { opacity: 1; pointer-events: auto; }
+.card { position: absolute; top: 50%; right: max(24px, env(safe-area-inset-right, 0px)); width: min(440px, calc(100% - 32px)); max-height: calc(100% - 120px);
+  transform: translate(30px, -50%); opacity: 0; pointer-events: none; transition: opacity .35s, transform .35s;
+  background: var(--paper); color: var(--paper-ink); border-radius: 6px 18px 6px 18px; box-shadow: 0 30px 80px rgba(0,0,0,.5);
+  display: grid; grid-template-rows: auto minmax(0, 1fr); overflow: hidden; }
+.card.on { opacity: 1; transform: translate(0, -50%); pointer-events: auto; }
+.card-head { padding: 22px 24px 8px; display: grid; gap: 4px; position: relative; }
+.card-kicker { font-family: var(--hand); font-size: 22px; color: #9A6B1F; }
+.card h2 { font-family: var(--display); font-weight: 400; font-size: 28px; line-height: 1.15; margin: 0; text-wrap: balance; padding-right: 36px; }
+.close { position: absolute; top: 16px; right: 16px; width: 34px; height: 34px; border-radius: 50%; border: 1px solid rgba(42,38,32,.2); background: transparent; color: var(--paper-ink); cursor: pointer; font-size: 18px; line-height: 1; }
+.card-body { padding: 8px 24px 24px; overflow-y: auto; display: grid; gap: 14px; align-content: start; font-size: 16px; line-height: 1.6; }
+.card-body p { margin: 0; }
+.card-body .muted { color: var(--paper-dim); font-size: 14px; }
+.facts { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.facts li { display: grid; grid-template-columns: 74px minmax(0, 1fr); gap: 12px; align-items: baseline; padding-top: 10px; border-top: 1px dashed rgba(42,38,32,.22); }
+.facts b { font-family: var(--display); font-weight: 400; font-size: 22px; color: #3E5C3A; font-variant-numeric: tabular-nums; }
+.stones { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.stones li { background: #E3D7C1; border-radius: 50% 50% 46% 54% / 60% 60% 40% 40%; padding: 8px 14px; font-size: 14px; font-weight: 600; }
+.proj { display: grid; gap: 4px; padding-top: 12px; border-top: 1px dashed rgba(42,38,32,.22); }
+.proj b { font-weight: 600; }
+.proj small { color: var(--paper-dim); font-size: 13px; }
+.award { background: #2F4A33; color: #F4EBDA; padding: 1px 8px; border-radius: 999px; font-weight: 600; }
+.proj a { color: #2F4A33; font-weight: 600; }
+.feat { margin: 4px 0 0; padding-left: 18px; display: grid; gap: 4px; }
+.feat b { color: #3E5C3A; }
+blockquote { margin: 8px 0 4px; padding: 10px 14px; border-left: 3px solid #E6B54A; background: #EFE3CB; border-radius: 0 8px 8px 0; font-family: var(--display); font-size: 16px; line-height: 1.45; }
+blockquote cite { display: block; margin-top: 4px; font-family: var(--body); font-style: normal; font-size: 13px; color: var(--paper-dim); }
+.mailrow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.mail { font-family: ui-monospace, Menlo, monospace; font-size: 15px; padding: 9px 12px; border-radius: 8px; background: #E9DEC9; user-select: all; overflow-wrap: anywhere; }
+.btn { border: 0; background: #2F4A33; color: var(--paper); padding: 9px 16px; border-radius: 999px; font-weight: 600; font-size: 14px; cursor: pointer; text-decoration: none; display: inline-block; }
+.btn.alt { background: transparent; color: #2F4A33; border: 1.5px solid #2F4A33; }
+.next { display: flex; justify-content: space-between; gap: 8px; align-items: center; padding-top: 6px; }
+.next .muted { font-family: var(--hand); font-size: 20px; }
 
-      /* ---------- TABS ---------- */
-      .tabs {
-        display: flex;
-        justify-content: center;
-        gap: 10px;
-        margin-bottom: 24px;
-      }
+.toast { position: absolute; left: 50%; top: 84px; transform: translate(-50%, -10px); opacity: 0; transition: .5s; pointer-events: none;
+  background: rgba(15,26,30,.8); border: 1px solid var(--glow); color: var(--ink); padding: 10px 18px; border-radius: 999px; font-family: var(--hand); font-size: 22px; white-space: nowrap; max-width: calc(100% - 32px); overflow: hidden; text-overflow: ellipsis; }
+.toast.on { opacity: 1; transform: translate(-50%, 0); }
 
-      .tab-button {
-        padding: 10px 22px;
-        border: 1px solid #ccc;
-        background: #fff;
-        cursor: pointer;
-        font-size: 15px;
-        border-radius: 4px;
-      }
+@media (max-width: 720px) {
+  .card { top: auto; bottom: 0; right: 0; left: 0; width: 100%; max-height: 72%; border-radius: 20px 20px 0 0; transform: translateY(40px); }
+  .card.on { transform: none; }
+  .card-body { padding-bottom: max(24px, env(safe-area-inset-bottom, 0px)); }
+  .trail { justify-content: flex-start; }
+  .brand span { font-size: 13px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sway, .swing, .flame, .blink, .ripple, .spark, .firelight { animation: none; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="stage" id="stage">
+    <svg id="scene" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" aria-label="An illustrated forest at dusk with glowing places to explore">
+      <defs>
+        <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#132232"/><stop offset=".55" stop-color="#2E4B57"/><stop offset=".8" stop-color="#C98E5E"/><stop offset="1" stop-color="#E7B57A"/>
+        </linearGradient>
+        <radialGradient id="moonglow"><stop offset="0" stop-color="#FFF4D8" stop-opacity=".55"/><stop offset="1" stop-color="#FFF4D8" stop-opacity="0"/></radialGradient>
+        <radialGradient id="warm"><stop offset="0" stop-color="#FFC65C" stop-opacity=".75"/><stop offset=".5" stop-color="#FF9A3C" stop-opacity=".25"/><stop offset="1" stop-color="#FF9A3C" stop-opacity="0"/></radialGradient>
+        <radialGradient id="halo"><stop offset="0" stop-color="#FFE6A8" stop-opacity=".45"/><stop offset="1" stop-color="#FFE6A8" stop-opacity="0"/></radialGradient>
+        <linearGradient id="water" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2E5A6A"/><stop offset="1" stop-color="#4E8A93"/></linearGradient>
+        <linearGradient id="fog" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#D9C6A6" stop-opacity="0"/><stop offset="1" stop-color="#D9C6A6" stop-opacity=".28"/></linearGradient>
+      </defs>
 
-      .tab-button.active {
-        background: #2c3e50;
-        color: #fff;
-        border-color: #2c3e50;
-      }
+      <rect width="1600" height="900" fill="url(#sky)"/>
+      <circle cx="1270" cy="150" r="140" fill="url(#moonglow)"/>
+      <circle cx="1270" cy="150" r="44" fill="#FBF0D6"/>
+      <g id="stars"></g>
 
-      /* ---------- TAB CONTENT ---------- */
-      .tab-content {
-        display: none;
-      }
-      .tab-content.active {
-        display: block;
-      }
+      <g id="L-far" class="layer" data-depth="6"></g>
+      <rect x="0" y="560" width="1600" height="120" fill="url(#fog)"/>
+      <g id="L-mid" class="layer" data-depth="12"></g>
 
-      .panel {
-        background: #fff;
-        border: 1px solid #eee;
-        border-radius: 6px;
-        padding: 24px;
-      }
+      <g class="layer" data-depth="16">
+        <path d="M0 700 Q 400 670 800 690 T 1600 680 V 900 H 0 Z" fill="#1A3029"/>
+        <path d="M0 760 Q 500 735 900 755 T 1600 745 V 900 H 0 Z" fill="#15281F"/>
+        <path d="M720 900 C 760 840, 900 820, 840 770 S 760 720, 800 690" fill="none" stroke="#C9A978" stroke-opacity=".28" stroke-width="56" stroke-linecap="round"/>
+        <g id="grass"></g>
+      </g>
 
-      /* ---------- PROJECT CARDS (1 x 3 grid) ---------- */
-      .cards {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 16px;
-      }
+      <!-- Hotspots -->
+      <g class="layer" data-depth="18" id="spots">
 
-      .card {
-        border: 1px solid #eee;
-        border-radius: 6px;
-        overflow: hidden;
-        background: #fff;
-      }
+        <!-- Roots: big old tree -->
+        <g class="spot" data-id="roots" tabindex="0" role="button" aria-label="The old tree: my roots in psychology">
+          <circle class="halo" cx="300" cy="520" r="260" fill="url(#halo)"/>
+          <g class="sway b">
+            <path d="M270 700 C 275 600, 262 520, 280 430 L 330 430 C 340 520, 328 600, 336 700 Z" fill="#4A3424"/>
+            <circle cx="300" cy="380" r="110" fill="#2F5236"/>
+            <circle cx="220" cy="420" r="80" fill="#2A4A31"/>
+            <circle cx="385" cy="415" r="85" fill="#2C4E33"/>
+            <circle cx="300" cy="300" r="80" fill="#36603D"/>
+            <circle cx="250" cy="340" r="40" fill="#3D6B44" opacity=".8"/>
+          </g>
+          <path d="M276 690 C 250 705, 225 712, 196 716 M286 694 C 270 715, 262 728, 250 742 M326 694 C 342 712, 360 722, 392 728 M332 688 C 360 700, 388 702, 412 700" stroke="#4A3424" stroke-width="9" stroke-linecap="round" fill="none"/>
+          <circle class="spark" cx="300" cy="700" r="7" fill="#FFE6A8"/>
+          <g class="tag"><text x="300" y="215" text-anchor="middle">my roots</text></g>
+        </g>
 
-      /* Empty space for project photo */
-      .card-photo {
-        height: 120px;
-        background: #ddd;
-        border-bottom: 1px dashed #aaa;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #888;
-        font-size: 12px;
-      }
+        <!-- Signpost -->
+        <g class="spot" data-id="hello" tabindex="0" role="button" aria-label="The signpost: say hello">
+          <circle class="halo" cx="860" cy="700" r="130" fill="url(#halo)"/>
+          <rect x="852" y="610" width="12" height="150" rx="3" fill="#5A4030"/>
+          <g transform="rotate(-6 860 640)"><rect x="800" y="622" width="150" height="40" rx="5" fill="#8A6545"/><text x="875" y="650" text-anchor="middle" font-family="Caveat, cursive" font-weight="700" font-size="26" fill="#F4EBDA">Una's woods</text></g>
+          <g transform="rotate(5 860 690)"><rect x="790" y="675" width="130" height="34" rx="5" fill="#7A583C"/><text x="855" y="699" text-anchor="middle" font-family="Caveat, cursive" font-weight="700" font-size="22" fill="#F4EBDA">← start here</text></g>
+          <circle class="spark" cx="955" cy="625" r="7" fill="#FFE6A8"/>
+          <g class="tag"><text x="860" y="595" text-anchor="middle">hello</text></g>
+        </g>
 
-      .card-text {
-        padding: 14px;
-      }
-      .card-text h3 {
-        font-size: 16px;
-        margin-bottom: 6px;
-      }
-      .card-text p {
-        font-size: 14px;
-        color: #555;
-      }
+        <!-- Lantern -->
+        <g class="spot" data-id="lantern" tabindex="0" role="button" aria-label="The lantern: things I've built">
+          <path d="M960 432 Q 1050 420 1140 400" stroke="#3A2A1E" stroke-width="10" fill="none" stroke-linecap="round"/>
+          <circle class="halo" cx="1052" cy="500" r="150" fill="url(#halo)"/>
+          <g class="swing">
+            <line x1="1052" y1="430" x2="1052" y2="470" stroke="#2A2620" stroke-width="2"/>
+            <circle cx="1052" cy="505" r="70" fill="url(#warm)" class="firelight"/>
+            <path d="M1036 470 H1068 L1074 480 H1030 Z" fill="#2A2620"/>
+            <rect x="1032" y="480" width="40" height="52" rx="6" fill="#FFD27A"/>
+            <rect x="1032" y="480" width="40" height="52" rx="6" fill="none" stroke="#2A2620" stroke-width="3"/>
+            <line x1="1052" y1="480" x2="1052" y2="532" stroke="#2A2620" stroke-width="2"/>
+            <path d="M1030 532 H1074 L1068 542 H1036 Z" fill="#2A2620"/>
+          </g>
+          <circle class="spark" cx="1090" cy="470" r="7" fill="#FFE6A8"/>
+          <g class="tag"><text x="1052" y="600" text-anchor="middle">things I've built</text></g>
+        </g>
 
-      /* ---------- MOBILE: stack cards vertically ---------- */
-      @media (max-width: 640px) {
-        .cards {
-          grid-template-columns: 1fr;
-        }
-      }
-    </style>
-  </head>
+        <!-- Owl -->
+        <g class="spot" data-id="owl" tabindex="0" role="button" aria-label="The owl: how I listen">
+          <circle class="halo" cx="1385" cy="400" r="120" fill="url(#halo)"/>
+          <path d="M1300 452 Q 1390 440 1480 456" stroke="#3A2A1E" stroke-width="11" fill="none" stroke-linecap="round"/>
+          <ellipse cx="1385" cy="410" rx="34" ry="44" fill="#8C6A4C"/>
+          <ellipse cx="1385" cy="422" rx="20" ry="26" fill="#C9AE88"/>
+          <circle cx="1385" cy="368" r="30" fill="#8C6A4C"/>
+          <path d="M1360 346 L1364 330 L1374 344 Z M1410 346 L1406 330 L1396 344 Z" fill="#8C6A4C"/>
+          <circle cx="1373" cy="368" r="11" fill="#F4EBDA"/><circle cx="1397" cy="368" r="11" fill="#F4EBDA"/>
+          <g class="blink"><circle cx="1373" cy="368" r="5" fill="#1B1A17"/><circle cx="1397" cy="368" r="5" fill="#1B1A17"/></g>
+          <path d="M1381 378 L1389 378 L1385 386 Z" fill="#E1A23B"/>
+          <circle class="spark" cx="1425" cy="340" r="7" fill="#FFE6A8"/>
+          <g class="tag"><text x="1385" y="310" text-anchor="middle">how I listen</text></g>
+        </g>
 
-  <body>
-    <div class="container">
-      <!-- ============================================================
-         HEADER: photo, name, experiences
-         ============================================================ -->
-      <header>
-        <!-- Replace this div with <img src="your-photo.jpg" class="photo"> -->
-        <div class="photo">Photo</div>
+        <!-- Campfire -->
+        <g class="spot" data-id="fire" tabindex="0" role="button" aria-label="The campfire: stand-up comedy">
+          <circle cx="560" cy="790" r="170" fill="url(#warm)" class="firelight"/>
+          <circle class="halo" cx="560" cy="790" r="140" fill="url(#halo)"/>
+          <ellipse cx="450" cy="812" rx="34" ry="14" fill="#6B4A33"/><rect x="416" y="790" width="68" height="22" fill="#5A3E2B"/><ellipse cx="450" cy="790" rx="34" ry="12" fill="#A98463"/>
+          <ellipse cx="672" cy="818" rx="30" ry="12" fill="#6B4A33"/><rect x="642" y="800" width="60" height="18" fill="#5A3E2B"/><ellipse cx="672" cy="800" rx="30" ry="10" fill="#A98463"/>
+          <rect x="520" y="800" width="84" height="16" rx="8" fill="#5A3E2B" transform="rotate(14 562 808)"/>
+          <rect x="516" y="800" width="84" height="16" rx="8" fill="#6B4A33" transform="rotate(-14 558 808)"/>
+          <path class="flame" d="M560 720 C 590 760, 595 790, 560 806 C 525 790, 530 760, 560 720 Z" fill="#FF9A3C"/>
+          <path class="flame b" d="M560 748 C 578 772, 580 792, 560 804 C 540 792, 542 772, 560 748 Z" fill="#FFD27A"/>
+          <circle class="spark" cx="610" cy="730" r="7" fill="#FFE6A8"/>
+          <g class="tag"><text x="560" y="690" text-anchor="middle">around the fire</text></g>
+        </g>
 
-        <h1>Una(Yu) Qian</h1>
-        <p>Business Analyst · SQL · Python · Tableau</p>
-      </header>
+        <!-- Stream -->
+        <g class="spot" data-id="crossing" tabindex="0" role="button" aria-label="The stepping stones: crossing from psychology to analytics">
+          <path d="M1000 900 C 1080 840, 1180 860, 1260 820 S 1420 790, 1600 800 V 900 Z" fill="url(#water)" opacity=".9"/>
+          <path d="M1040 880 C 1110 845, 1190 860, 1270 828 S 1430 805, 1600 812" stroke="#BFE3E3" stroke-opacity=".5" stroke-width="3" fill="none" stroke-dasharray="18 42" class="ripple"/>
+          <circle class="halo" cx="1240" cy="840" r="130" fill="url(#halo)"/>
+          <ellipse cx="1130" cy="872" rx="30" ry="11" fill="#9A9488"/>
+          <ellipse cx="1190" cy="852" rx="26" ry="10" fill="#A8A296"/>
+          <ellipse cx="1248" cy="838" rx="28" ry="10" fill="#9A9488"/>
+          <ellipse cx="1306" cy="822" rx="24" ry="9" fill="#A8A296"/>
+          <ellipse cx="1360" cy="812" rx="22" ry="8" fill="#9A9488"/>
+          <circle class="spark" cx="1306" cy="800" r="7" fill="#FFE6A8"/>
+          <g class="tag"><text x="1240" y="780" text-anchor="middle">the crossing</text></g>
+        </g>
 
-      <!-- ============================================================
-         TABS
-         ============================================================ -->
-      <div class="tabs">
-        <button class="tab-button active" onclick="showTab('about')">
-          About Me
-        </button>
-        <button class="tab-button" onclick="showTab('projects')">
-          Projects
-        </button>
-      </div>
+        <!-- Camp table -->
+        <g class="spot" data-id="table" tabindex="0" role="button" aria-label="The camp table: what I'm building">
+          <circle class="halo" cx="1110" cy="730" r="140" fill="url(#halo)"/>
+          <ellipse cx="1110" cy="792" rx="110" ry="12" fill="#0E1D18" opacity=".6"/>
+          <rect x="1022" y="728" width="10" height="62" fill="#5A3E2B" transform="rotate(10 1027 728)"/>
+          <rect x="1188" y="728" width="10" height="62" fill="#5A3E2B" transform="rotate(-10 1193 728)"/>
+          <rect x="1000" y="758" width="220" height="9" rx="3" fill="#6B4A33"/>
+          <rect x="1010" y="716" width="200" height="14" rx="3" fill="#9B7552"/>
+          <line x1="1060" y1="716" x2="1060" y2="730" stroke="#7A583C" stroke-width="2"/><line x1="1110" y1="716" x2="1110" y2="730" stroke="#7A583C" stroke-width="2"/><line x1="1160" y1="716" x2="1160" y2="730" stroke="#7A583C" stroke-width="2"/>
+          <rect x="1036" y="670" width="30" height="48" rx="5" fill="#1E2A2E"/>
+          <rect x="1039" y="675" width="24" height="36" rx="2" fill="#8FD3C8" class="firelight"/>
+          <circle cx="1051" cy="688" r="5" fill="#F4EBDA"/><rect x="1044" y="697" width="14" height="3" rx="1.5" fill="#F4EBDA"/>
+          <path d="M1100 716 L1096 694 H1124 L1120 716 Z" fill="#E6B54A"/>
+          <path d="M1096 698 C 1086 698, 1086 710, 1098 708 M1124 698 C 1134 698, 1134 710, 1122 708" stroke="#E6B54A" stroke-width="3" fill="none"/>
+          <path d="M1150 716 L1156 686 H1186 L1192 716 Z" fill="#C8553D"/>
+          <path d="M1162 686 C 1162 674, 1180 674, 1180 686" stroke="#C8553D" stroke-width="3" fill="none"/>
+          <circle class="spark" cx="1205" cy="670" r="7" fill="#FFE6A8"/>
+          <g class="tag"><text x="1110" y="650" text-anchor="middle">what I'm building</text></g>
+        </g>
 
-      <!-- ---------- TAB 1: ABOUT ME ---------- -->
-      <div id="about" class="tab-content active">
-        <div class="panel">
-          <p>
-            My background is in psychology and social work, with extensive knowledge 
-            in psychopathology, suicide intervention, and other front-line areas of mental health. 
-            These experiences have given me a strong understanding of patient needs, communication, 
-            and the challenges involved in delivering effective and individualized care.
-          </p>
-        </div>
-      </div>
+        <!-- Mailbox -->
+        <g class="spot" data-id="mail" tabindex="0" role="button" aria-label="The mailbox: get in touch">
+          <circle class="halo" cx="1500" cy="700" r="110" fill="url(#halo)"/>
+          <rect x="1494" y="690" width="12" height="80" fill="#5A4030"/>
+          <path d="M1462 690 V 664 A 26 26 0 0 1 1514 664 V 690 Z" fill="#3E6B5A"/>
+          <path d="M1462 690 V 664 A 26 26 0 0 1 1514 664" fill="none" stroke="#2A4A3E" stroke-width="3"/>
+          <rect x="1516" y="650" width="5" height="34" fill="#D9573B"/><rect x="1521" y="650" width="16" height="11" fill="#D9573B"/>
+          <circle class="spark" cx="1470" cy="645" r="7" fill="#FFE6A8"/>
+          <g class="tag"><text x="1490" y="625" text-anchor="middle">say hi</text></g>
+        </g>
+      </g>
 
-      <!-- ---------- TAB 2: PROJECTS ---------- -->
-      <div id="projects" class="tab-content">
-        <div class="cards">
-          <!-- CARD 1 -->
-          <div class="card">
-            <div class="card-photo">Project Image</div>
-            <div class="card-text">
-              <h3>Project Title</h3>
-              <p>Short description of what you did and the tools you used.</p>
-            </div>
-          </div>
+      <g id="L-front" class="layer" data-depth="30"></g>
+      <g id="flies"></g>
+    </svg>
+  </div>
 
-          <!-- CARD 2 -->
-          <div class="card">
-            <div class="card-photo">Project Image</div>
-            <div class="card-text">
-              <h3>Project Title</h3>
-              <p>Short description of what you did and the tools you used.</p>
-            </div>
-          </div>
+  <div class="hud">
+    <div class="brand"><b>Una Qian</b><span class="motto">I want to make data with heart.</span></div>
+    <div class="counter" id="counter">found <i id="found">0</i> / 8</div>
+  </div>
 
-          <!-- CARD 3 -->
-          <div class="card">
-            <div class="card-photo">Project Image</div>
-            <div class="card-text">
-              <h3>Project Title</h3>
-              <p>Short description of what you did and the tools you used.</p>
-            </div>
-          </div>
-        </div>
-      </div>
+  <div class="hint" id="hint">click anything that glows</div>
+  <nav class="trail" id="trail" aria-label="Trail map"></nav>
+
+  <div class="scrim" id="scrim"></div>
+  <article class="card" id="card" role="dialog" aria-modal="false" aria-labelledby="card-title">
+    <div class="card-head">
+      <div class="card-kicker" id="card-kicker"></div>
+      <h2 id="card-title"></h2>
+      <button class="close" id="close" type="button" aria-label="Close">×</button>
     </div>
+    <div class="card-body" id="card-body"></div>
+  </article>
+  <div class="toast" id="toast"></div>
+</div>
 
-    <!-- ============================================================
-       SIMPLE TAB SWITCHING SCRIPT
-       ============================================================ -->
-    <script>
-      function showTab(id) {
-        // hide all tab contents
-        document.querySelectorAll(".tab-content").forEach(function (el) {
-          el.classList.remove("active");
-        });
-        // remove active state from all buttons
-        document.querySelectorAll(".tab-button").forEach(function (btn) {
-          btn.classList.remove("active");
-        });
-        // show the selected tab + highlight the clicked button
-        document.getElementById(id).classList.add("active");
-        event.target.classList.add("active");
-      }
-    </script>
-  </body>
+<script>
+(function () {
+  var NS = 'http://www.w3.org/2000/svg';
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function rng(seed) { return function () { seed |= 0; seed = seed + 0x6D2B79F5 | 0; var t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+  function el(tag, attrs, parent) { var e = document.createElementNS(NS, tag); for (var k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
+
+  function pine(g, x, base, h, col, trunk, cls) {
+    var t = el('g', cls ? { 'class': cls } : {}, g);
+    el('rect', { x: x - h * .03, y: base - h * .2, width: h * .06, height: h * .2, fill: trunk }, t);
+    for (var i = 0; i < 3; i++) {
+      var apex = base - h + i * h * .2, bot = apex + h * .42, hw = h * (.16 + i * .07);
+      el('polygon', { points: (x) + ',' + apex + ' ' + (x - hw) + ',' + bot + ' ' + (x + hw) + ',' + bot, fill: col }, t);
+    }
+  }
+
+  var r = rng(7);
+  var stars = document.getElementById('stars');
+  for (var s = 0; s < 70; s++) el('circle', { cx: r() * 1600, cy: r() * 330, r: r() * 1.4 + .3, fill: '#FFF4D8', opacity: (r() * .6 + .2).toFixed(2) }, stars);
+
+  var far = document.getElementById('L-far');
+  el('path', { d: 'M0 620 Q 200 560 380 600 T 760 580 T 1140 590 T 1600 570 V 700 H0 Z', fill: '#2A4746', opacity: '.7' }, far);
+  for (var i = 0; i < 46; i++) pine(far, i * 36 + r() * 20, 640 + r() * 20, 110 + r() * 80, '#284442', '#284442');
+
+  var mid = document.getElementById('L-mid');
+  var keep = [[180, 430], [990, 1120], [1330, 1440]];
+  for (var j = 0; j < 30; j++) {
+    var x = j * 56 + r() * 30;
+    var skip = keep.some(function (k) { return x > k[0] && x < k[1]; });
+    if (skip) continue;
+    pine(mid, x, 700 + r() * 18, 200 + r() * 120, '#1C3530', '#2A231C', r() > .5 ? 'sway' : 'sway b');
+  }
+
+  var grass = document.getElementById('grass');
+  for (var gq = 0; gq < 120; gq++) {
+    var gx = r() * 1600, gy = 760 + r() * 140, gh = 8 + r() * 14;
+    el('path', { d: 'M' + gx + ' ' + gy + ' q 2 ' + (-gh) + ' 6 ' + (-gh - 3) + ' M' + (gx + 4) + ' ' + gy + ' q -1 ' + (-gh * .8) + ' -5 ' + (-gh), stroke: '#2C4A38', 'stroke-width': 2, fill: 'none', 'stroke-linecap': 'round' }, grass);
+  }
+
+  var front = document.getElementById('L-front');
+  [[40, 980, 760], [140, 960, 560], [1540, 990, 720], [1450, 960, 480]].forEach(function (t, k) {
+    pine(front, t[0], t[1], t[2], '#0B1714', '#0B1714', k % 2 ? 'sway b' : 'sway');
+  });
+
+  // fireflies
+  var flies = document.getElementById('flies'), bugs = [];
+  for (var f = 0; f < 28; f++) {
+    var c = el('circle', { r: r() * 1.8 + 1.4, fill: '#FFE08A', opacity: 0 }, flies);
+    bugs.push({ c: c, x: 100 + r() * 1400, y: 380 + r() * 460, a: r() * 6.28, sp: .3 + r() * .5, ph: r() * 6.28 });
+  }
+  function tick(t) {
+    bugs.forEach(function (b) {
+      b.a += (Math.sin(t / 2000 + b.ph) * .03);
+      b.x += Math.cos(b.a) * b.sp; b.y += Math.sin(b.a) * b.sp * .6;
+      if (b.x < 40 || b.x > 1560) b.a = Math.PI - b.a;
+      if (b.y < 360 || b.y > 860) b.a = -b.a;
+      b.c.setAttribute('cx', b.x.toFixed(1)); b.c.setAttribute('cy', b.y.toFixed(1));
+      b.c.setAttribute('opacity', (.35 + .55 * Math.max(0, Math.sin(t / 600 + b.ph))).toFixed(2));
+    });
+    requestAnimationFrame(tick);
+  }
+  if (!reduce) requestAnimationFrame(tick); else bugs.forEach(function (b) { b.c.setAttribute('cx', b.x); b.c.setAttribute('cy', b.y); b.c.setAttribute('opacity', .6); });
+
+  // parallax
+  var layers = Array.prototype.slice.call(document.querySelectorAll('.layer'));
+  if (!reduce && window.matchMedia('(pointer: fine)').matches) {
+    window.addEventListener('pointermove', function (e) {
+      var dx = e.clientX / window.innerWidth - .5, dy = e.clientY / window.innerHeight - .5;
+      layers.forEach(function (l) { var d = +l.dataset.depth; l.setAttribute('transform', 'translate(' + (-dx * d).toFixed(1) + ' ' + (-dy * d * .4).toFixed(1) + ')'); });
+    });
+  }
+
+  // stories
+  var EMAIL = 'unaqian5566@gmail.com', LINKEDIN = 'https://www.linkedin.com/in/yuqian-una5566';
+  var ORDER = ['hello', 'roots', 'crossing', 'lantern', 'table', 'owl', 'fire', 'mail'];
+  var STORIES = {
+    hello: { label: 'Hello', kicker: 'the signpost', title: "Hi, I'm Una. Welcome to my woods.",
+      body: "<p style='font-family:var(--display);font-size:22px;line-height:1.3;color:#3E5C3A'>I want to make data with heart.</p><p>I'm an analytics student at McGill who started out studying people. Behind every row in a dataset is a person, and I want the numbers I work with to remember that. This little forest is the easiest way I could think of to show you who I am.</p><p>Everything that glows has a story. Wander in any order; the counter in the corner keeps track.</p><p class='muted'>English · 中文 · Montreal, Canada</p>" },
+    roots: { label: 'My roots', kicker: 'the old tree', title: 'My roots are in psychology',
+      body: "<p>I spent five years at McMaster studying applied psychology. The part I loved most was research: designing a study, asking the right question, and then being honest about what the answers do and don't say.</p><ul class='facts'><li><b>490+</b><span>people recruited for a survey study I ran end to end, from ethics approval to a 20-page manuscript</span></li><li><b>480</b><span>t-tests linking 12 temperament traits to 40 mental-health symptoms</span></li><li><b>1</b><span>published review, on art therapy for schizophrenia, in <i>Psynapse</i> (Issue 7)</span></li></ul><p class='muted'>That's where I learned clean data starts long before the spreadsheet.</p>" },
+    crossing: { label: 'The crossing', kicker: 'the stepping stones', title: 'From people to data',
+      body: "<p>In 2026 I crossed over: a Master of Management in Analytics at McGill. It's been the biggest pivot of my life, and the most fun. Each stone is a tool I've picked up on the way.</p><ul class='stones'><li>Excel</li><li>SQL</li><li>Python</li><li>Power BI</li><li>Machine learning</li></ul><p>I didn't leave psychology behind. I brought it with me. The reason I came to McGill is simple: <b>I want to make data with heart.</b> That means remembering the people behind the numbers, and explaining results so they actually land with the people who need them.</p>" },
+    lantern: { label: "Things I've built", kicker: 'the lantern', title: "Things I've built",
+      body: "<div class='proj'><b>Predictive customer segmentation, with Novartis Pharma Canada</b><small>Capstone · Sep 2026 – Apr 2027 · in progress</small><span>Building the data pipeline for an ML model that groups healthcare professionals into four behavioural segments: cleaning anonymized CRM and prescribing data and finding the features that predict each group.</span></div><div class='proj'><b>Temperament and mental health, a 490-person study</b><small>Independent research · 2024–25</small><span>Designed the survey, fixed platform issues mid-collection, screened invalid responses, and found 79 significant associations (p &lt; .01).</span></div><div class='proj'><b>Art therapy for schizophrenia, a published review</b><small>Psynapse · 2023</small><span>Weighed 10 sources and flagged that the headline meta-analysis rested on just two small trials.</span></div>" },
+    owl: { label: 'How I listen', kicker: 'the owl', title: 'I notice what people leave unsaid',
+      body: "<p>Before data, I worked with people when things were hard. That taught me to slow down, listen, and ask one more question than feels necessary.</p><ul class='facts'><li><b>2 yrs</b><span>as a volunteer crisis responder at Kids Help Phone, supporting young people by text</span></li><li><b>18</b><span>workshops I led for youth with the City of Hamilton, with 95% attendance</span></li><li><b>30+</b><span>young people I connected to community services</span></li></ul><p>In analytics that shows up as asking what a stakeholder actually needs, and translating results without the jargon.</p>" },
+    fire: { label: 'Around the fire', kicker: 'the campfire', title: 'I also do stand-up',
+      body: "<p>Since April 2026 I've been doing stand-up in Mandarin (中文单口) with Peanut Comedy in Toronto, and I've written and performed in 15+ independent live shows.</p><p>Comedy and data storytelling turn out to be the same muscle: find the true thing, cut everything else, and say it so the whole room gets it on the first try.</p><p class='muted'>English shows: stay tuned.</p>" },
+    table: { label: "What I'm building", kicker: 'the camp table', title: "What I'm building right now",
+      body: "<div class='proj'><b>Gero, a personalized recovery companion for women</b><small><span class='award'>2nd place</span> · <a href='https://ziliudi.io/herackthon' target='_blank' rel='noopener'>Herackthon</a>, a women's-health hackathon run by Ziliudi (自留地) · Sep 14 – Oct 4, 2026</small><span>Gero helps women recovering from gynecological infections turn recovery advice they can't remember, and can't tell apart from online myths, into small, reliable reminders they can follow every day.</span></div><div class='proj'><b>The problem</b><span>Women who've just been treated for bacterial vaginosis, yeast infections or recurrent UTIs walk out of the clinic unsure what to do next. They forget the doctor's instructions, and the information they find online is hard to trust.</span></div><div class='proj'><b>What Gero does</b><ul class='feat'><li><b>Personalized</b> guidance tailored to her condition and recovery stage</li><li><b>Evidence-based</b> information on gynecological health she can trust</li><li><b>Actionable</b> daily reminders and tools that fit into real life</li></ul><blockquote>“A real gap in women's health, met with honesty about what the evidence does and does not say.”<cite>from the judges</cite></blockquote><span>Built in three weeks with a team of three. <a href='https://helpful-taiyaki-44d161.netlify.app/' target='_blank' rel='noopener'>Try the prototype ↗</a></span></div><div class='proj'><b>Where I'm stuck, honestly</b><span>Building Gero was the easy part. Getting it into people's hands is harder: launch and marketing are my weakest skills right now, so I'm learning them in public. If you've taken an app to market, I'd love to buy you a coffee and ask a lot of questions.</span></div><div class='proj'><b>Retail innovation</b><span>I've been spending my evenings at retail innovation events and competitions, such as the Retail Innovation Competition (RIC), to see how stores, shoppers and data meet in real life.</span></div>" },
+    mail: { label: 'Say hi', kicker: 'the mailbox', title: 'Leave me a note',
+      body: "<p>I'm looking for analytics roles where people and data meet. I'd love to hear from you.</p><div class='mailrow'><span class='mail' id='mailaddr'>" + EMAIL + "</span><button class='btn' type='button' id='copymail'>Copy email</button></div><div class='mailrow'><a class='btn alt' href='" + LINKEDIN + "' target='_blank' rel='noopener'>LinkedIn ↗</a></div>" }
+  };
+
+  var found = {}, current = null;
+  var card = document.getElementById('card'), scrim = document.getElementById('scrim');
+  var trail = document.getElementById('trail'), hint = document.getElementById('hint'), toast = document.getElementById('toast');
+
+  ORDER.forEach(function (id) {
+    var b = document.createElement('button'); b.type = 'button'; b.id = 'trail-' + id; b.textContent = STORIES[id].label;
+    b.addEventListener('click', function () { open(id); }); trail.appendChild(b);
+  });
+
+  function open(id) {
+    current = id; var s = STORIES[id];
+    document.getElementById('card-kicker').textContent = s.kicker;
+    document.getElementById('card-title').textContent = s.title;
+    var nextId = ORDER.filter(function (k) { return !found[k] && k !== id; })[0];
+    var nextHtml = nextId ? "<div class='next'><span class='muted'>next, try " + STORIES[nextId].kicker + "</span><button class='btn alt' type='button' id='go-next'>Go →</button></div>" : '';
+    document.getElementById('card-body').innerHTML = s.body + nextHtml;
+    card.classList.add('on'); scrim.classList.add('on'); hint.classList.add('gone');
+    var g = document.querySelector('.spot[data-id="' + id + '"]'); if (g) g.classList.add('found');
+    document.getElementById('trail-' + id).classList.add('found');
+    if (!found[id]) {
+      found[id] = true; var n = Object.keys(found).length;
+      document.getElementById('found').textContent = n;
+      if (n === ORDER.length) showToast("You found all 8. Thanks for walking with me. Let's make data with heart.");
+    }
+    var nb = document.getElementById('go-next'); if (nb) nb.addEventListener('click', function () { open(nextId); pan(nextId); });
+    var cm = document.getElementById('copymail');
+    if (cm) cm.addEventListener('click', function () {
+      var done = function () { cm.textContent = 'Copied'; };
+      var fb = function () { var rg = document.createRange(); rg.selectNodeContents(document.getElementById('mailaddr')); var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(rg); cm.textContent = 'Selected, press ⌘C'; };
+      try { navigator.clipboard.writeText(EMAIL).then(done, fb); } catch (e) { fb(); }
+    });
+    document.getElementById('close').focus({ preventScroll: true });
+  }
+  function close() { card.classList.remove('on'); scrim.classList.remove('on');
+    var g = current && document.querySelector('.spot[data-id="' + current + '"]'); if (g) g.focus({ preventScroll: true }); current = null; }
+  function showToast(msg) { toast.textContent = msg; toast.classList.add('on'); setTimeout(function () { toast.classList.remove('on'); }, 4200); }
+
+  // pan the stage on phones so the chosen spot is visible
+  var stage = document.getElementById('stage'), svg = document.getElementById('scene');
+  var SPOTX = { table: 1110, hello: 860, roots: 300, crossing: 1240, lantern: 1052, owl: 1385, fire: 560, mail: 1490 };
+  function pan(id) {
+    if (stage.scrollWidth <= stage.clientWidth + 2) return;
+    var scale = svg.getBoundingClientRect().width / 1600;
+    stage.scrollTo({ left: SPOTX[id] * scale - stage.clientWidth / 2, behavior: reduce ? 'auto' : 'smooth' });
+  }
+  trail.addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) pan(b.id.replace('trail-', '')); });
+
+  document.querySelectorAll('.spot').forEach(function (g) {
+    g.addEventListener('click', function () { open(g.dataset.id); });
+    g.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(g.dataset.id); } });
+  });
+  document.getElementById('close').addEventListener('click', close);
+  scrim.addEventListener('click', close);
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && current) close(); });
+
+  // start centred on phones
+  function centre() { if (stage.scrollWidth > stage.clientWidth) stage.scrollLeft = (stage.scrollWidth - stage.clientWidth) / 2; }
+  centre(); window.addEventListener('resize', centre);
+  if (window.matchMedia('(pointer: coarse)').matches) hint.textContent = 'swipe around, tap what glows';
+})();
+</script>
+</body>
 </html>
